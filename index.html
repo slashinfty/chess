@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!--Meta-->
+    <meta charset="utf-8">
+    <title>Chess Tournament Manager</title>
+    <meta name="description" content="Simple web app to run chess tournaments">
+    <meta name="author" content="Matt Braddock">
+
+    <!--Mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet"> 
+
+    <!--CSS-->
+    <link rel="stylesheet" href="https://unpkg.com/skeleton-css@2.0.4/css/skeleton.css" />
+    <link rel="stylesheet" href="https://unpkg.com/skeleton-css@2.0.4/css/normalize.css" />
+    <link rel="stylesheet" href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" />
+    <link rel="stylesheet" href="index.css" />
+
+    <!--JavaScript-->
+    <script type="module">
+        import {
+            Grid,
+            html
+        } from "https://unpkg.com/gridjs?module";
+    </script>
+    <script type="module">
+        import TournamentOrganizer from "https://unpkg.com/tournament-organizer/dist/index.module.js";
+    </script>
+    <script src="index.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h3 class="header">
+            Chess Tournament Manager
+        </h3>
+        <div class="row">
+            <div class="one-half column right">
+                <button>Import Tournament</button>
+            </div>
+            <div class="one-half column">
+                <button>Export Tournament</button>
+            </div>
+        </div>
+        <div class="row buttons">
+            <div class="three columns">
+                <button>Setup</button>
+            </div>
+            <div class="three columns">
+                <button>Players</button>
+            </div>
+            <div class="three columns">
+                <button>Pairings</button>
+            </div>
+            <div class="three columns">
+                <button>Standings</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

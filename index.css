@@ -1,0 +1,18 @@
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+.header {
+    margin-top: 1em;
+    text-align: center;
+}
+
+.buttons {
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    text-align: center;
+}
+
+.right {
+    text-align: right;
+}
