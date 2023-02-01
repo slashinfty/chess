@@ -21,18 +21,6 @@
     <link rel="stylesheet" href="https://unpkg.com/skeleton-css@2.0.4/css/normalize.css" />
     <link rel="stylesheet" href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" />
     <link rel="stylesheet" href="index.css" />
-
-    <!--JavaScript-->
-    <script type="module">
-        import {
-            Grid,
-            html
-        } from "https://unpkg.com/gridjs?module";
-    </script>
-    <script type="module">
-        import TournamentOrganizer from "https://unpkg.com/tournament-organizer/dist/index.module.js";
-    </script>
-    <script src="index.js"></script>
 </head>
 
 <body>
@@ -42,27 +30,76 @@
         </h3>
         <div class="row">
             <div class="one-half column right">
-                <button>Import Tournament</button>
+                <label class="fakeBtn">
+                    <input id="importBtn" type="file" accept="application/JSON" />
+                    Import Tournament
+                </label>
             </div>
             <div class="one-half column">
-                <button>Export Tournament</button>
+                <button id="exportBtn">Export Tournament</button>
+            </div>
+        </div>
+        <div class="row" id="continue">
+            <div class=".u-full-width">
+                <button id="continueBtn">Continue Previous Tournament</button>
             </div>
         </div>
         <div class="row buttons">
             <div class="three columns">
-                <button>Setup</button>
+                <button id="setupBtn">Setup</button>
             </div>
             <div class="three columns">
-                <button>Players</button>
+                <button id="playersBtn">Players</button>
             </div>
             <div class="three columns">
-                <button>Pairings</button>
+                <button id="pairingsBtn">Pairings</button>
             </div>
             <div class="three columns">
-                <button>Standings</button>
+                <button id="standingsBtn">Standings</button>
             </div>
         </div>
+        <div id="setup" class="main">
+            <div class="row">
+                <div class="one-third column">
+                    <label for="tournamentName">Tournament Name</label>
+                    <input id="tournamentName" type="text" />
+                    <br />
+                    Required
+                </div>
+                <div class="one-third column">
+                    <label for="tournamentFormat">Tournament Format</label>
+                    <select id="tournamentFormat">
+                        <option value="swiss" selected>Swiss</option>
+                        <option value="round-robin">Round-Robin</option>
+                        <option value="double-round-robin">Double Round-Robin</option>
+                    </select>
+                </div>
+                <div class="one-third column">
+                    <label for="tournamentRoundCount">Number of Rounds (Swiss)</label>
+                    <input id="tournamentRoundCount" type="number" min="1" />
+                    <br />
+                    Leave blank to be determined by number of players
+                </div>
+            </div>
+            <div class=".u-full-width">
+                <button id="createBtn">Create Tournament</button>
+            </div>
+        </div>
+        <div id="players" class="main">
+
+        </div>
+        <div id="pairings" class="main">
+
+        </div>
+        <div id="standings" class="main">
+
+        </div>
     </div>
+
+    <!--JavaScript-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js" integrity="sha512-a9NgEEK7tsCvABL7KqtUTQjl69z7091EVPpw5KxPlZ93T141ffe1woLtbXTX+r2/8TtTvRX/v4zTL2UlMUPgwg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.min.js" integrity="sha512-P0bOMePRS378NwmPDVPU455C/TuxDS+8QwJozdc7PGgN8kLqR4ems0U/3DeJkmiE31749vYWHvBOtR+37qDCZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="index.js" type="module"></script>
 </body>
 
 </html>
