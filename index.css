@@ -1,9 +1,18 @@
 body {
     font-family: 'Inter', sans-serif;
+    margin-bottom: 5em;
 }
 
 input[type="file"] {
     display: none;
+}
+
+label {
+    display: inline-block;
+}
+
+.table {
+    margin-bottom: 1.5em;
 }
 
 .fakeBtn { /* C&P from skeleton.css */
@@ -40,6 +49,10 @@ input[type="file"] {
     text-align: center;
 }
 
+.center {
+    text-align: center;
+}
+
 .right {
     text-align: right;
 }
@@ -48,10 +61,10 @@ input[type="file"] {
     display: none;
 }
 
-#setup {
-    text-align: center;
+#createBtn {
+    margin-top: 1em;
 }
 
-#createBtn {
+.spaceAbove {
     margin-top: 1em;
 }

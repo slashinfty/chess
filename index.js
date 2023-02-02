@@ -1,9 +1,6 @@
 /* Imports */
-import TournamentOrganizer from "https://unpkg.com/tournament-organizer/dist/index.module.js";
-import {
-    Grid,
-    html
-} from "https://unpkg.com/gridjs?module";
+import TournamentOrganizer from "https://esm.sh/tournament-organizer/dist/index.module.js";
+import * as DataTable from "./DataTables/datatables.js";
 
 /* Initial setup */
 const TO = new TournamentOrganizer();
@@ -25,6 +22,7 @@ document.getElementById('playersBtn').addEventListener('click', playersButton);
 document.getElementById('pairingsBtn').addEventListener('click', pairingsButton);
 document.getElementById('standingsBtn').addEventListener('click', standingsButton);
 document.getElementById('createBtn').addEventListener('click', createButton);
+document.getElementById('addPlayerBtn').addEventListener('click', addPlayerButton);
 
 /* Button functions */
 function importButton() {
@@ -62,6 +60,7 @@ function playersButton() {
     if (tournament === undefined) return;
     [...document.querySelectorAll('.main')].forEach(el => el.style.display = 'none');
     document.getElementById('players').style.display = 'block';
+    playersTable.draw();
 }
 
 function pairingsButton() {
@@ -77,6 +76,7 @@ function standingsButton() {
 }
 
 function createButton() {
+    if (tournament !== undefined) return;
     const name = document.getElementById('tournamentName').value;
     if (name === undefined || name === null || name === '') return;
     const format = document.getElementById('tournamentFormat').value;
@@ -102,15 +102,59 @@ function createButton() {
     });
     save();
     document.getElementById('continue').style.display = 'none';
+    document.title = tournament.name;
 }
+
+function addPlayerButton() {
+    if (tournament.status !== 'setup') return;
+    const name = document.getElementById('playerName').value;
+    if (name === undefined || name === null || name === '') return;
+    const rating = document.getElementById('playerRating').value;
+    let player;
+    try {
+        player = tournament.createPlayer(name);
+        player.values = {
+            value: rating
+        }
+    } catch (e) {
+        console.error(e);
+    }
+    save();
+    updatePlayers();
+}
+
+/* Tables */
+const playersTable = $('#playersTable').DataTable({
+    data: tournament === undefined ? [] : tournament.players,
+    scrollY: '60vh',
+    scrollCollapse: true,
+    paging: false,
+    dom: 'Bfrtip',
+    buttons: [
+        'print'
+    ],
+    columns: [
+        {title: 'ID', data: 'id', width: '25%'},
+        {title: 'Name', data: 'name', render: (d, t, r) => `${d} (${r.value})`, width: '55%'},
+        {title: 'Active', data: 'active', width: '20%'}
+    ]
+});
 
 /* Utility functions */
 function loadTournament(contents) {
     tournament = TO.reloadTournament(contents);
     save();
     document.getElementById('continue').style.display = 'none';
+    document.title = tournament.name;
+    updatePlayers();
 }
 
 function save() {
     window.localStorage.setItem('tournament', JSON.stringify(tournament));
+}
+
+function updatePlayers() {
+    playersTable.clear();
+    playersTable.rows.add(tournament.players);
+    playersTable.draw();
 }
