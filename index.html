@@ -31,23 +31,25 @@
         <h3 class="header" id="header">
             Chess Tournament Manager
         </h3>
-        <div class="row">
-            <div class="one-half column right">
+        <div class="row center space-below">
+            <div class="three columns">&nbsp;</div>
+            <div class="three columns">
                 <label class="fakeBtn">
                     <input id="importBtn" type="file" accept="application/JSON" />
                     Import Tournament
                 </label>
             </div>
-            <div class="one-half column">
+            <div class="three columns">
                 <button id="exportBtn">Export Tournament</button>
             </div>
+            <div class="three columns">&nbsp;</div>
         </div>
-        <div class="row" id="continue">
+        <div class="row space-below" id="continue">
             <div class=".u-full-width">
                 <button id="continueBtn">Continue Previous Tournament</button>
             </div>
         </div>
-        <div class="row buttons">
+        <div class="row space-below center">
             <div class="three columns">
                 <button id="setupBtn">Setup</button>
             </div>
@@ -89,10 +91,10 @@
             </div>
         </div>
         <div id="players" class="main">
-            <div class="table">
+            <div class="space-below">
                 <table id="playersTable"></table>
             </div>
-            <div class="row center">
+            <div class="row center space-below">
                 <div class="one-third column">
                     <label for="playerName">Player Name: </label>
                     <input id="playerName" type="text" size="12" />
@@ -105,12 +107,52 @@
                     <button id="addPlayerBtn">Add Player</button>
                 </div>
             </div>
+            <div class="row center">
+                <div class="one-third column">
+                    <button id="startTournamentBtn">Start Tournament</button>
+                </div>
+                <div class="one-third column">
+                    <label for="playerID">Player ID: </label>
+                    <input id="playerID" type="text" size="12" />
+                </div>
+                <div class="one-third column">
+                    <button id="removePlayerBtn">Remove Player</button>
+                </div>
+            </div>
         </div>
         <div id="pairings" class="main">
-
+            <div class="space-below">
+                <table id="pairingsTable"></table>
+            </div>
+            <div class="row center space-below">
+                <div class="three columns">&nbsp;</div>
+                <div class="three columns">
+                    <label for="roundNumber">Round: </label>
+                    <input id="roundNumber" type="number" min="1" size="4" value="1" />
+                </div>
+                <div class="three columns">
+                    <button id="nextRoundBtn">Start Next Round</button>
+                </div>
+                <div class="three columns">&nbsp;</div>
+            </div>
+            <div class="row center">
+                <div class="three columns">
+                    <label for="boardNumber">Board: </label>
+                    <input id="boardNumber" type="number" min="1" size="4" />
+                </div>
+                <div class="three columns">
+                    <button id="whiteWinsBtn">1-0</button>
+                </div>
+                <div class="three columns">
+                    <button id="drawBtn">0.5-0.5</button>
+                </div>
+                <div class="three columns">
+                    <button id="blackWinsBtn">0-1</button>
+                </div>
+            </div>
         </div>
         <div id="standings" class="main">
-
+            <table id="standingsTable"></table>
         </div>
     </div>
 
