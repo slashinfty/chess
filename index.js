@@ -62,7 +62,7 @@ const standingsTableConfig = {
 let standingsTable = $('#standingsTable').DataTable({
     ...standingsTableConfig,
     columns: [
-        {title: 'Filler', data: 'filler'}
+        {title: 'BLANK', data: 'BLANK'}
     ]
 });
 
@@ -256,9 +256,10 @@ function initialize() {
     save();
     document.getElementById('continue').style.display = 'none';
     document.title = tournament.name;
+    standingsTable.destroy();
+    $('#standingsTable').empty();
     standingsTable = $('#standingsTable').DataTable({
         ...standingsTableConfig,
-        destroy: true,
         columns: tournament.stageOne.format === 'swiss' ? [
             {title: 'Rank', data: 'rank', width: '10%'},
             {title: 'Name', data: 'player', render: (d, t, r) => `${d.name} (${d.value})`, width: '40%'},
@@ -268,7 +269,11 @@ function initialize() {
             {title: 'TB#3', data: 'tiebreaks.cumulative', width: '10%'},
             {title: 'TB#4', data: 'tiebreaks.oppCumulative', width: '10%'}
         ] : [
-            {title: 'Filler', data: 'filler'}
+            {title: 'Rank', data: 'rank', width: '10%'},
+            {title: 'Name', data: 'player', render: (d, t, r) => `${d.name} (${d.value})`, width: '70%'},
+            {title: 'Points', data: 'matchPoints', width: '10%'},
+            {title: 'S-B', data: 'tiebreaks.sonnebornBerger', width: '10%'}
         ]
     });
+    document.getElementById('tiebreakers').innerText = tournament.stageOne.format === 'swiss' ? `TB#1: Median-Buchholz\nTB#2: Solkoff\nTB#3: Cumulative\nTB#4: Opponent's Cumulative` : `S-B: Sonneborn-Berger`;
 }
