@@ -6,6 +6,66 @@ import * as DataTable from "./DataTables/datatables.js";
 const TO = new TournamentOrganizer();
 let tournament;
 
+/* Tables */
+const playersTable = $('#playersTable').DataTable({
+    data: [],
+    scrollY: '60vh',
+    autoWidth: false,
+    paging: false,
+    dom: 'Bfrtip',
+    buttons: [
+        'print'
+    ],
+    columns: [
+        {title: 'ID', data: 'id', width: '25%'},
+        {title: 'Name', data: 'name', render: (d, t, r) => `${d} (${r.value})`, width: '55%'},
+        {title: 'Active', data: 'active', width: '20%'}
+    ]
+});
+
+const pairingsTable = $('#pairingsTable').DataTable({
+    data: [],
+    scrollY: '60vh',
+    autoWidth: false,
+    paging: false,
+    dom: 'Bfrtip',
+    buttons: [
+        'print'
+    ],
+    columns: [
+        {title: 'Board', data: 'match', width: '10%'},
+        {title: 'White', data: 'player1.id', render: (d, t, r) => {
+            if (d === null) return 'Bye';
+            const player = tournament.players.find(p => p.id === d);
+            return `${player.name} (${player.value})`
+        }, width: '40%'},
+        {title: 'Black', data: 'player2.id', render: (d, t, r) => {
+            if (d === null) return 'Bye';
+            const player = tournament.players.find(p => p.id === d);
+            return `${player.name} (${player.value})`
+        }, width: '40%'},
+        {title: 'Result', data: 'active', render: (d, t, r) => d === true ? '0-0' : r.player1.draw === 1 && r.player2.draw === 1 ? '0.5-0.5' : `${r.player1.win}-${r.player2.win}`, width: '10%'}
+    ]
+});
+
+const standingsTableConfig = {
+    data: [],
+    scrollY: '60vh',
+    autoWidth: false,
+    paging: false,
+    dom: 'Bfrtip',
+    buttons: [
+        'print'
+    ]
+}
+
+let standingsTable = $('#standingsTable').DataTable({
+    ...standingsTableConfig,
+    columns: [
+        {title: 'Filler', data: 'filler'}
+    ]
+});
+
 /* Check local storage on load */
 (function () {
     const saved = window.localStorage.getItem('tournament');
@@ -75,7 +135,8 @@ function pairingsButton() {
 function standingsButton() {
     if (tournament === undefined || tournament.status === 'setup') return;
     [...document.querySelectorAll('.main')].forEach(el => el.style.display = 'none');
-    document.getElementById('pairings').style.display = 'block';
+    document.getElementById('standings').style.display = 'block';
+    standingsTable.draw();
 }
 
 function createButton() {
@@ -103,9 +164,7 @@ function createButton() {
             rounds: typeof rounds === 'number' && format === swiss ? rounds : 0
         }
     });
-    save();
-    document.getElementById('continue').style.display = 'none';
-    document.title = tournament.name;
+    initialize();
 }
 
 function addPlayerButton() {
@@ -153,75 +212,19 @@ function startTournamentButton() {
     }
     save();
     updatePairings();
-    // update standings
+    updateStandings();
 }
-
-/* Tables */
-const playersTable = $('#playersTable').DataTable({
-    data: [],
-    scrollY: '60vh',
-    autoWidth: false,
-    paging: false,
-    dom: 'Bfrtip',
-    buttons: [
-        'print'
-    ],
-    columns: [
-        {title: 'ID', data: 'id', width: '25%'},
-        {title: 'Name', data: 'name', render: (d, t, r) => `${d} (${r.value})`, width: '55%'},
-        {title: 'Active', data: 'active', width: '20%'}
-    ]
-});
-
-const pairingsTable = $('#pairingsTable').DataTable({
-    data: [],
-    scrollY: '60vh',
-    autoWidth: false,
-    paging: false,
-    dom: 'Bfrtip',
-    buttons: [
-        'print'
-    ],
-    columns: [
-        {title: 'Board', data: 'match', width: '10%'},
-        {title: 'White', data: 'player1.id', render: (d, t, r) => {
-            if (d === null) return 'Bye';
-            const player = tournament.players.find(p => p.id === d);
-            return `${player.name} (${player.value})`
-        }, width: '40%'},
-        {title: 'Black', data: 'player2.id', render: (d, t, r) => {
-            if (d === null) return 'Bye';
-            const player = tournament.players.find(p => p.id === d);
-            return `${player.name} (${player.value})`
-        }, width: '40%'},
-        {title: 'Result', data: 'active', render: (d, t, r) => d === true ? '0-0' : r.player1.draw === 1 && r.player2.draw === 1 ? '0.5-0.5' : `${r.player1.win}-${r.player2.win}`, width: '10%'}
-    ]
-});
-
-const standingsTable = $('#standingsTable').DataTable({
-    data: [],
-    scrollY: '60vh',
-    autoWidth: false,
-    paging: false,
-    dom: 'Bfrtip',
-    buttons: [
-        'print'
-    ],
-    columns: []//todo
-})
 
 /* Utility functions */
 function loadTournament(contents) {
     tournament = TO.reloadTournament(contents);
-    save();
-    document.getElementById('continue').style.display = 'none';
-    document.title = tournament.name;
     if (tournament.round > 1) {
         document.getElementById('roundNumber').value = tournament.round;
     }
+    initialize();
     updatePlayers();
     updatePairings();
-    // update standings
+    updateStandings();
 }
 
 function save() {
@@ -238,4 +241,34 @@ function updatePairings() {
     pairingsTable.clear();
     pairingsTable.rows.add(tournament.matches.filter(m => m.round === Number(document.getElementById('roundNumber').value)));
     pairingsTable.draw();
+}
+
+function updateStandings() {
+    standingsTable.clear();
+    standingsTable.rows.add(tournament.standings().map((player, index) => ({
+        rank: index + 1,
+        ...player
+    })));
+    standingsTable.draw();
+}
+
+function initialize() {
+    save();
+    document.getElementById('continue').style.display = 'none';
+    document.title = tournament.name;
+    standingsTable = $('#standingsTable').DataTable({
+        ...standingsTableConfig,
+        destroy: true,
+        columns: tournament.stageOne.format === 'swiss' ? [
+            {title: 'Rank', data: 'rank', width: '10%'},
+            {title: 'Name', data: 'player', render: (d, t, r) => `${d.name} (${d.value})`, width: '40%'},
+            {title: 'Points', data: 'matchPoints', width: '10%'},
+            {title: 'TB#1', data: 'tiebreaks.medianBuchholz', width: '10%'},
+            {title: 'TB#2', data: 'tiebreaks.solkoff', width: '10%'},
+            {title: 'TB#3', data: 'tiebreaks.cumulative', width: '10%'},
+            {title: 'TB#4', data: 'tiebreaks.oppCumulative', width: '10%'}
+        ] : [
+            {title: 'Filler', data: 'filler'}
+        ]
+    });
 }
