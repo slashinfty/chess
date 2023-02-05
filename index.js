@@ -179,7 +179,8 @@ function createButton() {
 function addPlayerButton() {
     const name = document.getElementById('playerName').value;
     if (name === undefined || name === null || name === '') return;
-    const rating = document.getElementById('playerRating').value;
+    let rating = document.getElementById('playerRating').value;
+    rating = rating === undefined || rating === null || rating === '' ? 0 : parseInt(rating);
     document.getElementById('playerName').value = '';
     document.getElementById('playerRating').value = '';
     let player;
