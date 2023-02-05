@@ -38,13 +38,14 @@ const pairingsTable = $('#pairingsTable').DataTable({
             if (d === null) return 'Bye';
             const player = tournament.players.find(p => p.id === d);
             return `${player.name} (${player.value})`
-        }, width: '40%'},
+        }, width: '35%'},
         {title: 'Black', data: 'player2.id', render: (d, t, r) => {
             if (d === null) return 'Bye';
             const player = tournament.players.find(p => p.id === d);
             return `${player.name} (${player.value})`
-        }, width: '40%'},
-        {title: 'Result', data: 'active', render: (d, t, r) => d === true ? '0-0' : r.player1.draw === 1 && r.player2.draw === 1 ? '0.5-0.5' : `${r.player1.win}-${r.player2.win}`, width: '10%'}
+        }, width: '35%'},
+        {title: 'Result', data: 'active', render: (d, t, r) => d === true ? '0-0' : r.player1.draw === 1 && r.player2.draw === 1 ? '0.5-0.5' : `${r.player1.win}-${r.player2.win}`, width: '10%'},
+        {title: 'Active', data: 'active', width: '10%'}
     ]
 });
 
@@ -71,6 +72,7 @@ let standingsTable = $('#standingsTable').DataTable({
     const saved = window.localStorage.getItem('tournament');
     if (saved === null || saved === undefined) return;
     document.getElementById('continue').style.display = 'block';
+    buttonToggle();
 })();
 
 /* Event listeners */
@@ -100,7 +102,6 @@ function importButton() {
 }
 
 function exportButton() {
-    if (tournament === undefined) return;
     const element = document.createElement('a');
     element.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(JSON.stringify(tournament, null, 4))}`);
     element.setAttribute('download', `${tournament.name}.json`);
@@ -124,28 +125,24 @@ function setupButton() {
 }
 
 function playersButton() {
-    if (tournament === undefined) return;
     [...document.querySelectorAll('.main')].forEach(el => el.style.display = 'none');
     document.getElementById('players').style.display = 'block';
     playersTable.draw();
 }
 
 function pairingsButton() {
-    if (tournament === undefined || tournament.status === 'setup') return;
     [...document.querySelectorAll('.main')].forEach(el => el.style.display = 'none');
     document.getElementById('pairings').style.display = 'block';
     pairingsTable.draw();
 }
 
 function standingsButton() {
-    if (tournament === undefined || tournament.status === 'setup') return;
     [...document.querySelectorAll('.main')].forEach(el => el.style.display = 'none');
     document.getElementById('standings').style.display = 'block';
     standingsTable.draw();
 }
 
 function createButton() {
-    if (tournament !== undefined) return;
     const name = document.getElementById('tournamentName').value;
     if (name === undefined || name === null || name === '') return;
     const format = document.getElementById('tournamentFormat').value;
@@ -173,7 +170,6 @@ function createButton() {
 }
 
 function addPlayerButton() {
-    if (tournament.status !== 'setup') return;
     const name = document.getElementById('playerName').value;
     if (name === undefined || name === null || name === '') return;
     const rating = document.getElementById('playerRating').value;
@@ -190,11 +186,11 @@ function addPlayerButton() {
         return;
     }
     save();
+    buttonToggle();
     updatePlayers();
 }
 
 function removePlayerButton() {
-    if (tournament.status === 'complete') return;
     const id = document.getElementById('playerID').value;
     if (id === undefined || id === null || id === '') return;
     document.getElementById('playerID').value = '';
@@ -216,12 +212,23 @@ function startTournamentButton() {
         return;
     }
     save();
+    buttonToggle();
     updatePairings();
     updateStandings();
 }
 
 function nextRoundButton() {
-
+    try {
+        tournament.next();
+    } catch (e) {
+        console.error(e);
+        return;
+    }
+    save();
+    buttonToggle();
+    document.getElementById('roundNumber').value = tournament.round;
+    updatePairings();
+    updateStandings();
 }
 
 function result(res) {
@@ -229,6 +236,7 @@ function result(res) {
     if (round === undefined || round === null || round === '') return;
     const board = parseInt(document.getElementById('boardNumber').value);
     if (board === undefined || board === null || board === '') return;
+    document.getElementById('boardNumber').value = '';
     const match = tournament.matches.find(m => m.round === round && m.match === board);
     try {
         tournament.enterResult(match.id, res === 'w' ? 1 : 0, res === 'b' ? 1 : 0, res === 'd' ? 1 : 0);
@@ -236,6 +244,8 @@ function result(res) {
         console.error(e);
         return;
     }
+    save();
+    buttonToggle();
     updatePairings();
     updateStandings();
 }
@@ -301,4 +311,54 @@ function initialize() {
         ]
     });
     document.getElementById('tiebreakers').innerText = tournament.stageOne.format === 'swiss' ? `TB#1: Median-Buchholz · TB#2: Solkoff · TB#3: Cumulative · TB#4: Opponent's Cumulative` : `S-B: Sonneborn-Berger`;
+    buttonToggle();
+}
+
+function buttonToggle() {
+    if (tournament === undefined) {
+        document.getElementById('exportBtn').disabled = true;
+        document.getElementById('playersBtn').disabled = true;
+        document.getElementById('pairingsBtn').disabled = true;
+        document.getElementById('standingsBtn').disabled = true;
+        document.getElementById('createBtn').disabled = false;
+        document.getElementById('tournamentName').disabled = false;
+        document.getElementById('tournamentFormat').disabled = false;
+        document.getElementById('tournamentRoundCount').disabled = false;
+        return;
+    } else {
+        document.getElementById('exportBtn').disabled = false;
+        document.getElementById('playersBtn').disabled = false;
+        document.getElementById('pairingsBtn').disabled = false;
+        document.getElementById('standingsBtn').disabled = false;
+        document.getElementById('createBtn').disabled = true;
+        document.getElementById('tournamentName').disabled = true;
+        document.getElementById('tournamentFormat').disabled = true;
+        document.getElementById('tournamentRoundCount').disabled = true;
+    }
+    if (tournament.status === 'setup') {
+        document.getElementById('pairingsBtn').disabled = true;
+        document.getElementById('standingsBtn').disabled = true;
+        document.getElementById('addPlayerBtn').disabled = false;
+        if (tournament.players.filter(p => p.active === true).length > 1) {
+            document.getElementById('startTournamentBtn').disabled = false;
+        } else {
+            document.getElementById('startTournamentBtn').disabled = true;
+        }
+    } else {
+        document.getElementById('pairingsBtn').disabled = false;
+        document.getElementById('standingsBtn').disabled = false;
+        document.getElementById('addPlayerBtn').disabled = true;
+        document.getElementById('startTournamentBtn').disabled = true;
+    }
+    if (tournament.status === 'complete') {
+        document.getElementById('removePlayerBtn').disabled = true;
+        document.getElementById('nextRoundBtn').disabled = true;
+    } else {
+        document.getElementById('removePlayerBtn').disabled = false;
+        if (tournament.matches.filter(m => m.round === tournament.round).every(m => m.active === false)) {
+            document.getElementById('nextRoundBtn').disabled = false;
+        } else {
+            document.getElementById('nextRoundBtn').disabled = true;
+        }
+    }
 }

@@ -11,6 +11,10 @@ label {
     display: inline-block;
 }
 
+button:disabled {
+    color: gray;
+}
+
 .fakeBtn { /* C&P from skeleton.css */
     display: inline-block;
     height: 38px;
