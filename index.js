@@ -85,6 +85,11 @@ document.getElementById('createBtn').addEventListener('click', createButton);
 document.getElementById('addPlayerBtn').addEventListener('click', addPlayerButton);
 document.getElementById('removePlayerBtn').addEventListener('click', removePlayerButton);
 document.getElementById('startTournamentBtn').addEventListener('click', startTournamentButton);
+document.getElementById('roundNumber').addEventListener('change', updatePairings);
+document.getElementById('nextRoundBtn').addEventListener('click', nextRoundButton);
+document.getElementById('whiteWinsBtn').addEventListener('click', () => result('w'));
+document.getElementById('drawBtn').addEventListener('click', () => result('d'));
+document.getElementById('blackWinsBtn').addEventListener('click', () => result('b'));
 
 /* Button functions */
 function importButton() {
@@ -215,6 +220,26 @@ function startTournamentButton() {
     updateStandings();
 }
 
+function nextRoundButton() {
+
+}
+
+function result(res) {
+    const round = parseInt(document.getElementById('roundNumber').value);
+    if (round === undefined || round === null || round === '') return;
+    const board = parseInt(document.getElementById('boardNumber').value);
+    if (board === undefined || board === null || board === '') return;
+    const match = tournament.matches.find(m => m.round === round && m.match === board);
+    try {
+        tournament.enterResult(match.id, res === 'w' ? 1 : 0, res === 'b' ? 1 : 0, res === 'd' ? 1 : 0);
+    } catch (e) {
+        console.error(e);
+        return;
+    }
+    updatePairings();
+    updateStandings();
+}
+
 /* Utility functions */
 function loadTournament(contents) {
     tournament = TO.reloadTournament(contents);
@@ -275,5 +300,5 @@ function initialize() {
             {title: 'S-B', data: 'tiebreaks.sonnebornBerger', width: '10%'}
         ]
     });
-    document.getElementById('tiebreakers').innerText = tournament.stageOne.format === 'swiss' ? `TB#1: Median-Buchholz\nTB#2: Solkoff\nTB#3: Cumulative\nTB#4: Opponent's Cumulative` : `S-B: Sonneborn-Berger`;
+    document.getElementById('tiebreakers').innerText = tournament.stageOne.format === 'swiss' ? `TB#1: Median-Buchholz · TB#2: Solkoff · TB#3: Cumulative · TB#4: Opponent's Cumulative` : `S-B: Sonneborn-Berger`;
 }
