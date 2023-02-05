@@ -1,5 +1,5 @@
 /* Imports */
-import TournamentOrganizer from "https://unpkg.com/tournament-organizer@3.2.4/dist/index.module.js";
+import TournamentOrganizer from "https://unpkg.com/tournament-organizer@3.2.5/dist/index.module.js";
 import * as DataTable from "./DataTables/datatables.js";
 
 /* Initial setup */
@@ -15,6 +15,9 @@ const playersTable = $('#playersTable').DataTable({
     dom: 'Bfrtip',
     buttons: [
         'print'
+    ],
+    order: [
+        [1, 'asc']
     ],
     columns: [
         {title: 'ID', data: 'id', width: '25%'},
@@ -32,6 +35,10 @@ const pairingsTable = $('#pairingsTable').DataTable({
     buttons: [
         'print'
     ],
+    columnDefs: [{
+        className: 'dt-center',
+        targets: [0, 3, 4]
+    }],
     columns: [
         {title: 'Board', data: 'match', width: '10%'},
         {title: 'White', data: 'player1.id', render: (d, t, r) => {
@@ -295,6 +302,10 @@ function initialize() {
     $('#standingsTable').empty();
     standingsTable = $('#standingsTable').DataTable({
         ...standingsTableConfig,
+        columnDefs: [{
+            className: 'dt-center',
+            targets: tournament.stageOne.format === 'swiss' ? [0, 2, 3, 4, 5, 6] : [0, 2, 3]
+        }],
         columns: tournament.stageOne.format === 'swiss' ? [
             {title: 'Rank', data: 'rank', width: '10%'},
             {title: 'Name', data: 'player', render: (d, t, r) => `${d.name} (${d.value})`, width: '40%'},

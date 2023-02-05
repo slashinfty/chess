@@ -11,8 +11,9 @@ label {
     display: inline-block;
 }
 
-button:disabled {
+button:disabled, button:disabled:hover {
     color: gray;
+    border: 1px solid #bbb;
 }
 
 .fakeBtn { /* C&P from skeleton.css */
@@ -30,6 +31,12 @@ button:disabled {
     border: 1px solid #bbb;
     cursor: pointer;
     box-sizing: border-box;
+}
+
+.fakeBtn:hover {
+    color: #333;
+    border-color: #888;
+    outline: 0;
 }
 
 .header {
@@ -56,4 +63,16 @@ button:disabled {
 
 #createBtn {
     margin-top: 1em;
+}
+
+#icon {
+    position: relative;
+    flex-shrink: 0;
+    height: 0.9em;
+    width: 0.9em;
+    fill: currentColor;
+}
+
+.no-hand:hover {
+    cursor: default;
 }
