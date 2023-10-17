@@ -1,5 +1,5 @@
 /* Imports */
-import TournamentOrganizer from "https://unpkg.com/tournament-organizer@3.2.5/dist/index.module.js";
+import TournamentOrganizer from "https://unpkg.com/tournament-organizer@3.3.1/dist/index.module.js";
 import * as DataTable from "./DataTables/datatables.js";
 
 /* Initial setup */
